@@ -31,7 +31,7 @@ def logout(current_user = Depends(utils.get_current_user), token: str = Depends(
 
 @router.get('/get-current-user', status_code=status.HTTP_200_OK, response_model=users.schemas.User)
 def get_current_user(db: Session = Depends(get_db), current_user: users.schemas.User = Depends(utils.get_current_user)):
-    return current_user
+    return utils.get_user_from_db(username=current_user.username, db=db)
 
 @router.post('/forgot-password', status_code=status.HTTP_200_OK)
 def get_password_reset_link(user: schemas.ForgotPassword, db: Session = Depends(get_db)):

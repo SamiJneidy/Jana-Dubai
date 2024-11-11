@@ -14,6 +14,14 @@ from .. config import settings
 pwd_context = CryptContext(schemes=["bcrypt"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+
+def get_user_from_db(username: str, db: Session):
+    try:
+        user = db.query(users.models.User).filter(users.models.User.username == username).first()
+        return user
+    except:
+        raise exceptions.ResourceNotFound
+    
 def password_is_valid(password: str) -> bool:
     different_chars: set = {}
     for c in password:
