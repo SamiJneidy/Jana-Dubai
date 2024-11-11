@@ -25,11 +25,11 @@ def get_product(id: int, db: Session) -> schemas.Product:
     return product
 
 @router.get("/get-products/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Product)
-def get_single_product(id: int, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
+def get_single_product(id: int, db: Session = Depends(get_db)):
     return get_product(id=id, db=db)
 
 @router.get("/get-products/", status_code=status.HTTP_200_OK, response_model=List[schemas.Product])
-def get_all_products(categoryId: int = None, page: int = 1, limit: int = 10, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
+def get_all_products(categoryId: int = None, page: int = 1, limit: int = 10, db: Session = Depends(get_db)):
     products = [
         get_product(product.id, db=db) for product in db.query(models.Product).
         filter(or_(categoryId is None or models.Product.category_id == categoryId)).
@@ -40,7 +40,7 @@ def get_all_products(categoryId: int = None, page: int = 1, limit: int = 10, db:
     return products
 
 @router.post("/create-product", status_code=status.HTTP_200_OK, response_model=schemas.Product)
-def create_product(data: schemas.ProductCreate, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
+def create_product(data: schemas.ProductCreate, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_admin)):
     id = db.execute(
         insert(models.Product).
         values(name=data.name, category_id=data.category_id, description=data.description).
@@ -55,7 +55,7 @@ def create_product(data: schemas.ProductCreate, db: Session = Depends(get_db), c
     return get_product(id=id, db=db)
 
 @router.put("/update-product/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Product)
-def update_product(id: int, data: schemas.ProductUpdate, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
+def update_product(id: int, data: schemas.ProductUpdate, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_admin)):
     product = db.query(models.Product).filter(models.Product.id == id).first()
     if(not product):
         raise exceptions.ResourceNotFound
@@ -79,7 +79,7 @@ def update_product(id: int, data: schemas.ProductUpdate, db: Session = Depends(g
     return get_product(id=id, db=db)
 
 @router.delete("/delete-product/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_product(id: int, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
+def delete_product(id: int, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_admin)):
     
     product = db.execute(
         select(models.Product).

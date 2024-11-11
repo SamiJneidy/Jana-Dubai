@@ -1,6 +1,7 @@
 from fastapi import Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 import jwt
@@ -11,6 +12,7 @@ from ..database import get_db
 from .. config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"])
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def password_is_valid(password: str) -> bool:
     different_chars: set = {}
@@ -31,6 +33,13 @@ def authenticate_user(username: str, password: str, db: Session) -> bool:
     if(not db_user or not verify_password(password, db_user.password)):
         return False
     return True
+
+def get_user_role(username: str, db: Session):
+    role = db.execute(
+        select(users.models.User.role).
+        where(users.models.User.username == username)
+        ).fetchone()[0]
+    return role
 
 def add_token_to_valid_jwts(token: str, expire_time: datetime, usage: str, db: Session):
     new_token: models.ValidJwt = models.ValidJwt(token=token, expire_time=expire_time, usage=usage)
@@ -55,8 +64,6 @@ def create_access_token(to_encode: dict, expire_minutes = settings.access_token_
     access_token = schemas.AccessToken(token=token, token_type=token_type)
     return access_token
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
 def get_current_token(token: str = Depends(oauth2_scheme)) -> str:
     return token
 
@@ -76,6 +83,18 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         current_user = users.schemas.User(username=payload["username"])
         if(not current_user or not token_in_valid_jwts(token=token, db=db)):
             raise exceptions.InvalidToken
+        return current_user
+    except jwt.InvalidTokenError:
+        raise exceptions.InvalidToken
+    
+def get_current_admin(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> users.schemas.User:
+    try:
+        payload = jwt.decode(jwt=token, key=settings.secret_key, algorithms=[settings.algorithm])
+        current_user = users.schemas.User(username=payload["username"])
+        if(not current_user or not token_in_valid_jwts(token=token, db=db)):
+            raise exceptions.InvalidToken
+        if get_user_role(username=payload["username"], db=db) != "admin":
+            raise exceptions.Forbidden
         return current_user
     except jwt.InvalidTokenError:
         raise exceptions.InvalidToken

@@ -9,14 +9,14 @@ from ..database import get_db
 router = APIRouter(prefix='/users')
 
 @router.get("/get-users/{id}", status_code=status.HTTP_200_OK, response_model=schemas.User)
-def get_user(id: int, db: Session = Depends(get_db), current_user: schemas.User = Depends(auth.utils.get_current_user)):
+def get_user(id: int, db: Session = Depends(get_db), current_user: schemas.User = Depends(auth.utils.get_current_admin)):
     result: Query = db.query(models.User).filter(models.User.id == id).first()
     if(not result):
         raise exceptions.ResourceNotFound    
     return result
 
 @router.get("/get-users/", status_code=status.HTTP_200_OK, response_model=List[schemas.User])
-def get_all_users(db: Session = Depends(get_db), current_user: schemas.User = Depends(auth.utils.get_current_user)):
+def get_all_users(db: Session = Depends(get_db), current_user: schemas.User = Depends(auth.utils.get_current_admin)):
     return db.query(models.User).all()
 
 @router.post('/signup', status_code=status.HTTP_200_OK, response_model=schemas.User)

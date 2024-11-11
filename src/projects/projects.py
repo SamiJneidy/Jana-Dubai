@@ -26,10 +26,10 @@ def get_project(id: int, db: Session) -> schemas.Project:
     return project
 
 @router.get("/get-projects/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Project)
-def get_single_project(id: int, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
+def get_single_project(id: int, db: Session = Depends(get_db)):
     return get_project(id=id, db=db)
 @router.get("/get-projects/", status_code=status.HTTP_200_OK, response_model=List[schemas.Project])
-def get_all_projects(categoryId: int = None, page: int = 1, limit: int = 10, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
+def get_all_projects(categoryId: int = None, page: int = 1, limit: int = 10, db: Session = Depends(get_db)):
     projects = [
         get_project(project.id, db=db) for project in db.query(models.Project).
         filter(or_(categoryId is None, models.Project.category_id == categoryId)).
@@ -40,7 +40,7 @@ def get_all_projects(categoryId: int = None, page: int = 1, limit: int = 10, db:
     return projects
 
 @router.post("/create-project", status_code=status.HTTP_200_OK, response_model=schemas.Project)
-def create_project(data: schemas.ProjectCreate, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
+def create_project(data: schemas.ProjectCreate, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_admin)):
     id = db.execute(
         insert(models.Project).
         values(name=data.name, category_id=data.category_id, description=data.description).
@@ -55,7 +55,7 @@ def create_project(data: schemas.ProjectCreate, db: Session = Depends(get_db), c
     return get_project(id=id, db=db)
 
 @router.put("/update-project/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Project)
-def update_project(id: int, data: schemas.ProjectUpdate, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
+def update_project(id: int, data: schemas.ProjectUpdate, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_admin)):
     project = db.query(models.Project).filter(models.Project.id == id).first()
     if(not project):
         raise exceptions.ResourceNotFound
@@ -78,7 +78,7 @@ def update_project(id: int, data: schemas.ProjectUpdate, db: Session = Depends(g
     return get_project(id=id, db=db)
 
 @router.delete("/delete-project/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_project(id: int, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
+def delete_project(id: int, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_admin)):
     
     project = db.execute(
         select(models.Project).
