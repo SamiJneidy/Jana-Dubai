@@ -16,7 +16,7 @@ def get_category_by_id(id: int, db: Session = Depends(get_db), current_user: use
         raise exceptions.ResourceNotFound
     return result
 
-@router.get("/get-categories", status_code=status.HTTP_200_OK, response_model=List[schemas.Category])
+@router.get("/get-categories/", status_code=status.HTTP_200_OK, response_model=List[schemas.Category])
 def get_all_categories(type: str = None, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
     result = db.query(models.Category).filter(or_(type is None, models.Category.type==type)).all()
     return result

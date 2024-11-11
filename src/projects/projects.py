@@ -28,7 +28,7 @@ def get_project(id: int, db: Session) -> schemas.Project:
 @router.get("/get-projects/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Project)
 def get_single_project(id: int, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
     return get_project(id=id, db=db)
-@router.get("/get-projects", status_code=status.HTTP_200_OK, response_model=List[schemas.Project])
+@router.get("/get-projects/", status_code=status.HTTP_200_OK, response_model=List[schemas.Project])
 def get_all_projects(categoryId: int = None, page: int = 1, limit: int = 10, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
     projects = [
         get_project(project.id, db=db) for project in db.query(models.Project).

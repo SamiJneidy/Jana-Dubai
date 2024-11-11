@@ -28,7 +28,7 @@ def get_product(id: int, db: Session) -> schemas.Product:
 def get_single_product(id: int, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
     return get_product(id=id, db=db)
 
-@router.get("/get-products", status_code=status.HTTP_200_OK, response_model=List[schemas.Product])
+@router.get("/get-products/", status_code=status.HTTP_200_OK, response_model=List[schemas.Product])
 def get_all_products(categoryId: int = None, page: int = 1, limit: int = 10, db: Session = Depends(get_db), current_user: users.schemas.User = Depends(auth.utils.get_current_user)):
     products = [
         get_product(product.id, db=db) for product in db.query(models.Product).

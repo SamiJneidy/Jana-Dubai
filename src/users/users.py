@@ -15,7 +15,7 @@ def get_user(id: int, db: Session = Depends(get_db), current_user: schemas.User 
         raise exceptions.ResourceNotFound    
     return result
 
-@router.get("/get-users", status_code=status.HTTP_200_OK, response_model=List[schemas.User])
+@router.get("/get-users/", status_code=status.HTTP_200_OK, response_model=List[schemas.User])
 def get_all_users(db: Session = Depends(get_db), current_user: schemas.User = Depends(auth.utils.get_current_user)):
     return db.query(models.User).all()
 
