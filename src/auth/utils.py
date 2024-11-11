@@ -93,7 +93,7 @@ def get_current_admin(token: str = Depends(oauth2_scheme), db: Session = Depends
         current_user = users.schemas.User(username=payload["username"])
         if(not current_user or not token_in_valid_jwts(token=token, db=db)):
             raise exceptions.InvalidToken
-        if get_user_role(username=payload["username"], db=db) != "admin":
+        if get_user_role(username=payload["username"], db=db) != "ADMIN":
             raise exceptions.Forbidden
         return current_user
     except jwt.InvalidTokenError:
