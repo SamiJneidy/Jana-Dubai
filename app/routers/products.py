@@ -1,0 +1,68 @@
+from fastapi import APIRouter, status
+from sqlalchemy.orm import Session
+from typing import List
+
+from .. import schemas, crud
+from .. import crud
+from ..core.dependencies import *
+
+router = APIRouter(prefix="/products")
+
+
+@router.get(
+    path="/get-products/{id}",
+    status_code=status.HTTP_200_OK,
+    response_model=schemas.Product,
+)
+def get_single_product(id: int, db: Session = Depends(get_db)):
+    return crud.get_product_by_id(product_id=id, db=db)
+
+
+@router.get(
+    path="/get-products/",
+    status_code=status.HTTP_200_OK,
+    response_model=List[schemas.Product],
+)
+def get_all_products(
+    categoryId: int = None,
+    page: int = 1,
+    limit: int = 10,
+    db: Session = Depends(get_db),
+):
+    return crud.get_all_products(db=db, categoryId=categoryId, page=page, limit=limit)
+
+
+@router.post(
+    path="/create-product",
+    status_code=status.HTTP_200_OK,
+    response_model=schemas.Product,
+)
+def create_product(
+    data: schemas.ProductCreate,
+    db: Session = Depends(get_db),
+    current_admin: schemas.User = Depends(get_current_admin),
+):
+    return crud.create_product(data=data, db=db)
+
+
+@router.put(
+    path="/update-product/{id}",
+    status_code=status.HTTP_200_OK,
+    response_model=schemas.Product,
+)
+def update_product(
+    id: int,
+    data: schemas.ProductUpdate,
+    db: Session = Depends(get_db),
+    current_admin: schemas.User = Depends(get_current_admin),
+):
+    return crud.update_product(id=id, data=data, db=db)
+
+
+@router.delete(path="/delete-product/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_product(
+    id: int,
+    db: Session = Depends(get_db),
+    current_admin: schemas.User = Depends(get_current_admin),
+):
+    crud.delete_product(id=id, db=db)
