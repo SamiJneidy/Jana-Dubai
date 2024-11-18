@@ -5,9 +5,9 @@ from datetime import datetime
 class Question(BaseModel):
     id: int
     email: EmailStr
-    name: str
-    phone: str
-    company: str
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    company: Optional[str] = None
     message: str
     answered: bool
     created_at: datetime
@@ -15,6 +15,6 @@ class Question(BaseModel):
 class CreateQuestion(BaseModel):
     email: EmailStr
     name: Optional[str] = None
-    phone: Optional[str] = ""
-    company: Optional[str] = ""
+    phone: Optional[str] = None
+    company: Optional[str] = None
     message: str
