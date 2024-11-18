@@ -22,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get(path="", status_code=status.HTTP_200_OK)
+@app.get(path="/", status_code=status.HTTP_200_OK)
 def root():
     return {"message": "Welcome to Jana Dubai"}
 
