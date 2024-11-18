@@ -33,11 +33,7 @@ def get_all_questions(db: Session = Depends(get_db)):
     status_code=status.HTTP_200_OK,
     response_model=schemas.Question,
 )
-def create_question(
-    data: schemas.CreateQuestion,
-    db: Session = Depends(get_db),
-    current_admin: schemas.User = Depends(get_current_admin),
-):
+def create_question(data: schemas.CreateQuestion, db: Session = Depends(get_db)):
     return crud.create_question(data=data, db=db)
 
 
