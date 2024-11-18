@@ -23,7 +23,8 @@ class Question(Base):
             "email": self.email,
             "name": self.name,
             "phone": self.phone,
-            "company_name": self.company,
+            "company": self.company,
+            "message": self.message,
             "answered": self.answered,
             "created_at": self.created_at,
         }
