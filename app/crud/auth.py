@@ -67,7 +67,7 @@ def get_current_admin(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ) -> schemas.User:
     user: schemas.User = get_user_from_token(token=token, usage="login", db=db)
-    if user.role != "AMDIN":
+    if user.role != "ADMIN":
         raise Forbidden()
     return user
 
