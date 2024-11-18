@@ -186,7 +186,7 @@ def get_password_reset_link(user: schemas.ForgotPassword, host_url: str, db: Ses
             db=db,
         )
         #reset_link: str = f"{host_url}reset-password/?token={token.token}"
-        reset_link: str = f"http://127.0.0.1/reset-password/?token={token.token}"
+        reset_link: str = f"http://localhost:5173/reset-password/?token={token.token}"
         send_email(
             to=[user.email],
             subject="Jana Dubai - Password Reset Request",
