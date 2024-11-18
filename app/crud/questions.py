@@ -32,9 +32,11 @@ def get_all_questions(db: Session) -> list[schemas.Question]:
 
 def create_question(data: schemas.CreateQuestion, db: Session) -> schemas.Question:
     try:
+        data_dict = data.model_dump()
+        data_dict["answered"] = False
         id: int = db.execute(
             insert(models.Question)
-            .values(**data.model_dump())
+            .values(**data_dict)
             .returning(models.Question.id)
         ).fetchone()[0]
         db.commit()
