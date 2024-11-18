@@ -29,7 +29,20 @@ def get_all_products(
     limit: int = 10,
     db: Session = Depends(get_db),
 ):
-    return crud.get_all_products(db=db, categoryId=categoryId, page=page, limit=limit)
+    return crud.get_all_products(db=db, category_id=categoryId, page=page, limit=limit)
+
+
+@router.get(
+    path="/search-products/",
+    status_code=status.HTTP_200_OK,
+    response_model=List[schemas.Product],
+)
+def search_products(
+    name: str,
+    categoryId: int = None,
+    db: Session = Depends(get_db),
+):
+    return crud.search_products(name=name, category_id=categoryId, db=db)
 
 
 @router.post(

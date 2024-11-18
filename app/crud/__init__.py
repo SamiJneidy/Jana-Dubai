@@ -21,6 +21,7 @@ from .products import (
     create_product,
     update_product,
     delete_product,
+    search_products,
 )
 from .projects import (
     get_db_project,

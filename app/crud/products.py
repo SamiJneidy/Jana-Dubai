@@ -1,4 +1,4 @@
-from sqlalchemy import insert, or_, update, delete, select
+from sqlalchemy import and_, insert, or_, update, delete, select, func
 from sqlalchemy.orm import Session
 
 from .images import add_product_images, delete_product_images, get_product_images
@@ -37,15 +37,34 @@ def get_product_by_id(product_id: int, db: Session) -> schemas.Product:
 
 
 def get_all_products(
-    db: Session, categoryId: int = None, page: int = 1, limit: int = 10
+    db: Session, category_id: int = None, page: int = 1, limit: int = 10
 ) -> list[schemas.Product]:
     try:
         products = [
             get_product_by_id(product.id, db=db)
             for product in db.query(models.Product)
-            .filter(or_(categoryId is None, models.Product.category_id == categoryId))
+            .filter(or_(category_id is None, models.Product.category_id == category_id))
             .offset((page - 1) * limit)
             .limit(limit)
+            .all()
+        ]
+        return products
+    except DatabaseError as e:
+        print(e)
+        raise e
+
+
+def search_products(name: str, category_id: int, db: Session):
+    try:
+        products = [
+            get_product_by_id(product.id, db=db)
+            for product in db.query(models.Product)
+            .filter(
+                and_(
+                    func.lower(models.Product.name).contains(name.lower()),
+                    or_(category_id is None, models.Product.category_id == category_id),
+                )
+            )
             .all()
         ]
         return products
