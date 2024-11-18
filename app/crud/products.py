@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Query, status, Depends
 from sqlalchemy import insert, or_, update, delete, select
 from sqlalchemy.orm import Session
-from typing import List
 
 from .images import add_product_images, delete_product_images, get_product_images
+from .categories import get_category_name
 from .. import schemas, models, utils
 from ..core.exceptions import *
 
@@ -24,7 +23,7 @@ def get_db_product(product_id: int, db: Session) -> models.Product:
 def get_product_by_id(product_id: int, db: Session) -> schemas.Product:
     try:
         db_product: models.Product = get_db_product(product_id=product_id, db=db)
-        category_name: str = utils.get_category_name(
+        category_name: str = get_category_name(
             category_id=db_product.category_id, db=db
         )
         product_dict: dict = db_product.to_dict()

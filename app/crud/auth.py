@@ -18,15 +18,17 @@ pwd_context = CryptContext(schemes=["bcrypt"])
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
+
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
+
 
 def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ) -> schemas.User:
-    from . import get_user_by_username
 
     try:
+        from . import get_user_by_username
         payload = jwt.decode(
             jwt=token, key=settings.secret_key, algorithms=[settings.algorithm]
         )
@@ -41,9 +43,9 @@ def get_current_user(
 def get_current_admin(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ) -> schemas.User:
-    from . import get_user_by_username
 
     try:
+        from . import get_user_by_username
         payload = jwt.decode(
             jwt=token, key=settings.secret_key, algorithms=[settings.algorithm]
         )
@@ -107,22 +109,25 @@ def get_current_token(token: str = Depends(oauth2_scheme)) -> str:
     return token
 
 
-def login(user: schemas.Login, db: Session) -> str:
+def login(credentials: schemas.Login, db: Session) -> schemas.LoginResponse:
     try:
+        from . import get_user_by_username
         db_user = (
-            db.query(models.User).filter(models.User.username == user.username).first()
+            db.query(models.User).filter(models.User.username == credentials.username).first()
         )
         if not db_user:
             raise UserNotFound()
         if not verify_password(
-            plain_password=user.password, hashed_password=db_user.password
+            plain_password=credentials.password, hashed_password=db_user.password
         ):
             raise InvalidCredentials()
-        payload = schemas.TokenPayload(username=user.username).model_dump()
+        payload = schemas.TokenPayload(username=db_user.username).model_dump()
         token: schemas.AccessToken = create_access_token(
             to_encode=payload, usage="login", db=db
         )
-        return token
+        user: schemas.User = get_user_by_username(username=db_user.username, db=db)
+        resp = schemas.LoginResponse(**token.model_dump(), **user.model_dump())
+        return resp
     except DatabaseError as e:
         print(e)
         raise UnexpectedError()
@@ -138,16 +143,20 @@ def logout(token: str, db: Session):
 
 
 def signup(data: schemas.UserCreate, db: Session) -> schemas.User:
-    if(db.query(models.User).filter(models.User.username == data.username).first()):
+    if db.query(models.User).filter(models.User.username == data.username).first():
         raise ResourceAlreadyInUse
     db_user: models.User = models.User(**data.model_dump())
     db_user.password = hash_password(db_user.password)
     db.add(db_user)
     db.commit()
     user = schemas.User(
-        **db.query(models.User).filter(models.User.username == data.username).first().to_dict()
+        **db.query(models.User)
+        .filter(models.User.username == data.username)
+        .first()
+        .to_dict()
     )
     return user
+
 
 # def get_password_reset_link(user: schemas.ForgotPassword, db: Session):
 #     try:

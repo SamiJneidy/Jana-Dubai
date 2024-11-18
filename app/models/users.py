@@ -17,9 +17,9 @@ class User(Base):
         return {
             "id": self.id,
             "username": self.username,
-            "password": self.password,
             "phone": self.phone,
             "role": self.role,
             "onblacklist": self.onblacklist,
             "created_at": self.created_at
+            #"password": self.password,
         }

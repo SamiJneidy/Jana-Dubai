@@ -1,9 +1,11 @@
+#To be removed
+
+
 from sqlalchemy.orm import Session
 from sqlalchemy import select, text
 
 from .. import schemas, models
 from ..core.database import get_connection
-from ..exceptions import crud_exceptions
 
 def insert_user(user: schemas.UserCreate):
     cursor = get_connection()

@@ -1,4 +1,4 @@
-from sqlalchemy import insert, or_
+from sqlalchemy import insert, or_, select
 from sqlalchemy.orm import Session
 
 
@@ -73,3 +73,9 @@ def delete_category(id: int, db: Session):
     except Exception as e:
         print(e)
         raise UnexpectedError()
+
+
+def get_category_name(category_id: int, db: Session) -> str:
+    return db.execute(
+        select(models.Category.name).where(models.Category.id == category_id)
+    ).fetchone()[0]

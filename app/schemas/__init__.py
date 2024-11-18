@@ -3,13 +3,10 @@ from .auth import (
     TokenPayload,
     AccessToken,
     ForgotPassword,
-    ResetPassword
+    ResetPassword,
+    LoginResponse,
 )
-from .categories import (
-    Category,
-    CategoryCreate,
-    CategoryUpdate
-)
+from .categories import Category, CategoryCreate, CategoryUpdate
 from .products import (
     Product,
     ProductCreate,
@@ -20,11 +17,6 @@ from .projects import (
     ProjectCreate,
     ProjectUpdate,
 )
-from .users import (
-    User,
-    UserCreate,
-    UserUpdate
-)
-from .images import (
-    Image
-)
+from .users import User, UserCreate, UserUpdate
+from .images import Image
+from .mail import Email

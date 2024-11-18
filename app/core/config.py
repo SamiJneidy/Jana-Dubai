@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     algorithm: str
     access_token_expire_minutes: int
     password_reset_token_expire_minutes: int
+    mail_username: str
+    mail_password: str
+    mail_from: str
     model_config = SettingsConfigDict(env_file=".env")
 
 settings = Settings()

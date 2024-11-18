@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Query, status, Depends
 from sqlalchemy import insert, or_, update, delete, select
 from sqlalchemy.orm import Session
-from typing import List
 
 from .images import add_project_images, delete_project_images, get_project_images
+from .categories import get_category_name
 from .. import schemas, models, utils
 from ..core.exceptions import *
 
@@ -24,7 +23,7 @@ def get_db_project(project_id: int, db: Session) -> models.Project:
 def get_project_by_id(project_id: int, db: Session) -> schemas.Project:
     try:
         db_project: models.Project = get_db_project(project_id=project_id, db=db)
-        category_name: str = utils.get_category_name(
+        category_name: str = get_category_name(
             category_id=db_project.category_id, db=db
         )
         project_dict: dict = db_project.to_dict()

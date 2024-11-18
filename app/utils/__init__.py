@@ -1,3 +1,1 @@
-from .categories import(
-    get_category_name
-)
+from .mail import send_email

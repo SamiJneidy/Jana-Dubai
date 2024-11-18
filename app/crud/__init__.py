@@ -1,14 +1,10 @@
-from .auth import (
-    login,
-    logout,
-    signup
-)
+from .auth import login, logout, signup
 from .categories import (
     get_category_by_id,
     get_all_categories,
     create_category,
     update_category,
-    delete_category
+    delete_category,
 )
 from .images import (
     get_project_images,
@@ -16,7 +12,7 @@ from .images import (
     delete_project_images,
     get_product_images,
     add_product_images,
-    delete_product_images
+    delete_product_images,
 )
 from .products import (
     get_db_product,
@@ -24,7 +20,7 @@ from .products import (
     get_all_products,
     create_product,
     update_product,
-    delete_product
+    delete_product,
 )
 from .projects import (
     get_db_project,
@@ -32,10 +28,6 @@ from .projects import (
     get_all_projects,
     create_project,
     update_project,
-    delete_project
+    delete_project,
 )
-from .users import (
-    get_user_by_id,
-    get_user_by_username,
-    get_all_users
-)
+from .users import get_user_by_id, get_user_by_username, get_all_users

@@ -29,11 +29,12 @@ def get_all_users(db: Session) -> list[schemas.User]:
         raise e
 
 
-def get_user_by_username(username: str, db: Session):
+def get_user_by_username(username: str, db: Session) -> schemas.User:
     try:
-        user = db.query(models.User).filter(models.User.username == username).first()
-        if not user:
+        db_user = db.query(models.User).filter(models.User.username == username).first()
+        if not db_user:
             raise UserNotFound()
+        user = schemas.User(**db_user.to_dict())
         return user
     except DatabaseError as e:
         print(e)

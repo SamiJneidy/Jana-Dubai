@@ -15,10 +15,10 @@ def signup(data: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post(
-    path="/login", status_code=status.HTTP_200_OK, response_model=schemas.AccessToken
+    path="/login", status_code=status.HTTP_200_OK, response_model=schemas.LoginResponse
 )
-def login(user: schemas.Login, db: Session = Depends(get_db)):
-    token: schemas.AccessToken = crud.login(user=user, db=db)
+def login(credentials: schemas.Login, db: Session = Depends(get_db)):
+    token: schemas.AccessToken = crud.login(credentials=credentials, db=db)
     return token
 
 
