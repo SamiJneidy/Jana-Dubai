@@ -1,5 +1,5 @@
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from .routers import (
@@ -22,6 +22,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get(path="", status_code=status.HTTP_200_OK)
+def root():
+    return {"message": "Welcome to Jana Dubai"}
 
 app.include_router(users_router)
 app.include_router(auth_router)
@@ -29,5 +32,3 @@ app.include_router(categories_router)
 app.include_router(products_router)
 app.include_router(projects_router)
 app.include_router(mail_router)
-
-#run server: uvicorn main:app --host 26.246.132.2 --port 8000 --reload
