@@ -177,7 +177,7 @@ def get_password_reset_link(user: schemas.ForgotPassword, host_url: str, db: Ses
             db.query(models.User).filter(models.User.username == user.email).first()
         )
         if not db_user:
-            raise ResourceNotFound(detail="Username not found")
+            raise UserNotFound()
         payload: dict = schemas.TokenPayload(username=user.email).model_dump()
         token: schemas.AccessToken = create_access_token(
             to_encode=payload,
@@ -185,7 +185,7 @@ def get_password_reset_link(user: schemas.ForgotPassword, host_url: str, db: Ses
             usage="password reset",
             db=db,
         )
-        reset_link: str = f"{host_url}?token={token.token}"
+        reset_link: str = f"{host_url}reset-password/?token={token.token}"
         send_email(
             to=[user.email],
             subject="Jana Dubai - Password Reset Request",

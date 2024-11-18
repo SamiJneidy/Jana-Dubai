@@ -31,4 +31,9 @@ from .projects import (
     update_project,
     delete_project,
 )
+from .questions import (
+    get_all_questions,
+    get_question_by_id,
+    create_question
+)
 from .users import get_user_by_id, get_user_by_username, get_all_users

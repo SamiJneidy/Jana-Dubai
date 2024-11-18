@@ -61,6 +61,11 @@ class CategoryNotFound(ResourceNotFound):
         super().__init__(resource_name="Category")
 
 
+class QuestionNotFound(ResourceNotFound):
+    def __init__(self):
+        super().__init__(resource_name="Question")
+
+
 class InvalidCredentials(HTTPException):
     def __init__(self, detail="Invalid credentials"):
         self.status_code = status.HTTP_404_NOT_FOUND

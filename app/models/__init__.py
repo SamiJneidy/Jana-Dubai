@@ -4,3 +4,4 @@ from .images import Image
 from .products import Product
 from .projects import Project
 from .users import User
+from .questions import Question
