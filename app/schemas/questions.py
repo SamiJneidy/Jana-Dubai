@@ -14,7 +14,7 @@ class Question(BaseModel):
 
 class CreateQuestion(BaseModel):
     email: EmailStr
-    name: Optional[str] = None
-    phone: Optional[str] = None
-    company: Optional[str] = None
+    name: Optional[str] = ""
+    phone: Optional[str] = ""
+    company: Optional[str] = ""
     message: str
