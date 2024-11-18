@@ -1,4 +1,4 @@
-from .auth import login, logout, signup
+from .auth import login, logout, signup, get_password_reset_link, reset_password
 from .categories import (
     get_category_by_id,
     get_all_categories,
