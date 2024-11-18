@@ -12,7 +12,7 @@ class Question(Base):
     phone = Column(name="phone", type_=String, nullable=True)
     company = Column(name="company", type_=String, nullable=True)
     message = Column(name="message", type_=String, nullable=False)
-    answered = Column(name="answered", type_=BOOLEAN, nullable=True)
+    answered = Column(name="answered", type_=BOOLEAN, nullable=False)
     created_at = Column(
         name="created_at", type_=TIMESTAMP(timezone=True), default=datetime.now()
     )
