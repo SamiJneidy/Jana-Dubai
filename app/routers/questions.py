@@ -40,7 +40,6 @@ def create_question(data: schemas.CreateQuestion, db: Session = Depends(get_db))
 @router.post(
     path="/answer-question/",
     status_code=status.HTTP_200_OK,
-    response_model=schemas.Question,
 )
 def create_question(data: schemas.AnswerQuestion, db: Session = Depends(get_db), current_admin = Depends(get_current_admin)):
     return crud.answer_question(data=data, db=db)
