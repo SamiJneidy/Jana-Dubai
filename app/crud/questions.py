@@ -60,7 +60,7 @@ def answer_question(data: schemas.AnswerQuestion, db: Session) -> schemas.Questi
         )
         db.execute(
             update(models.Question)
-            .where(models.Question.id == id)
+            .where(models.Question.id == data.id)
             .values(answered=True)
         )
         db.commit()
