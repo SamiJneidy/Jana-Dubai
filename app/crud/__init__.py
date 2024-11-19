@@ -34,6 +34,8 @@ from .projects import (
 from .questions import (
     get_all_questions,
     get_question_by_id,
-    create_question
+    create_question,
+    answer_question,
+    delete_question,
 )
 from .users import get_user_by_id, get_user_by_username, get_all_users

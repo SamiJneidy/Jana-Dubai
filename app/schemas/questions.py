@@ -18,3 +18,8 @@ class CreateQuestion(BaseModel):
     phone: Optional[str] = None
     company: Optional[str] = None
     message: str
+
+
+class AnswerQuestion(BaseModel):
+    id: int
+    message: str

@@ -33,7 +33,7 @@ def get_all_projects(
 
 
 @router.post(
-    path="/create-project",
+    path="/create-project/",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Project,
 )

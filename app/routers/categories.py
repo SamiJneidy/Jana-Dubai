@@ -29,7 +29,7 @@ def get_all_categories(type: str = None, db: Session = Depends(get_db)):
 
 
 @router.post(
-    path="/create-category",
+    path="/create-category/",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Category,
 )

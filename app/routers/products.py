@@ -46,7 +46,7 @@ def search_products(
 
 
 @router.post(
-    path="/create-product",
+    path="/create-product/",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Product,
 )
