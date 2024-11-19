@@ -29,7 +29,7 @@ def get_all_questions(answered: bool = None, page: int = 1, limit: int = 10, db:
 
 
 @router.post(
-    path="/create-question",
+    path="/create-question/",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Question,
 )
@@ -38,7 +38,7 @@ def create_question(data: schemas.CreateQuestion, db: Session = Depends(get_db))
 
 
 @router.post(
-    path="/answer-question",
+    path="/answer-question/",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Question,
 )
