@@ -56,11 +56,10 @@ async def get_user_from_token(token: str, db: Session, usage: str) -> schemas.Us
     username: str = payload["username"]
     return await get_user_by_username(username=username, db=db)
 
-
 async def get_current_user(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ) -> schemas.User:
-    await get_user_from_token(token=token, usage="login", db=db)
+    return await get_user_from_token(token=token, usage="login", db=db)
 
 
 async def get_current_admin(
