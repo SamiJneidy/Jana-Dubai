@@ -1,5 +1,5 @@
 import logging
-from fastapi import FastAPI, status
+from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from .routers import (
@@ -23,10 +23,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get(path="/", status_code=status.HTTP_200_OK)
-def root():
-    return {"message": "Welcome to Jana Dubai"}
-
 app.include_router(users_router)
 app.include_router(auth_router)
 app.include_router(categories_router)
@@ -34,3 +30,9 @@ app.include_router(products_router)
 app.include_router(projects_router)
 app.include_router(mail_router)
 app.include_router(questions_router)
+
+
+
+@app.get(path="/", status_code=status.HTTP_200_OK)
+def root():
+    return {"message": "Welcome to Jana Dubai"}

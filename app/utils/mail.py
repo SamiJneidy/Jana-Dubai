@@ -20,12 +20,13 @@ conf = ConnectionConfig(
 fm = FastMail(conf)
 
 
-def send_email(to: List[EmailStr], subject: str, body: str, subtype: str = "plain"):
+async def send_email(to: List[EmailStr], subject: str, body: str, subtype: str = "plain"):
     try:
         message = MessageSchema(
             subject=subject, body=body, recipients=to, subtype=subtype
         )
-        asyncio.run(fm.send_message(message))
+        await fm.send_message(message)
+        # asyncio.run(fm.send_message(message))
     except Exception as e:
         print(e)
         raise UnexpectedError()

@@ -15,8 +15,8 @@ router = APIRouter(prefix="/categories")
     status_code=status.HTTP_200_OK,
     response_model=schemas.Category,
 )
-def get_category_by_id(id: int, db: Session = Depends(get_db)):
-    return crud.get_category_by_id(id=id, db=db)
+async def get_category_by_id(id: int, db: Session = Depends(get_db)):
+    return await crud.get_category_by_id(id=id, db=db)
 
 
 @router.get(
@@ -24,8 +24,8 @@ def get_category_by_id(id: int, db: Session = Depends(get_db)):
     status_code=status.HTTP_200_OK,
     response_model=List[schemas.Category],
 )
-def get_all_categories(type: str = None, db: Session = Depends(get_db)):
-    return crud.get_all_categories(type=type, db=db)
+async def get_all_categories(type: str = None, db: Session = Depends(get_db)):
+    return await crud.get_all_categories(type=type, db=db)
 
 
 @router.post(
@@ -33,12 +33,12 @@ def get_all_categories(type: str = None, db: Session = Depends(get_db)):
     status_code=status.HTTP_200_OK,
     response_model=schemas.Category,
 )
-def create_category(
+async def create_category(
     data: schemas.CategoryCreate,
     db: Session = Depends(get_db),
     current_admin: schemas.User = Depends(get_current_admin),
 ):
-    return crud.create_category(data=data, db=db)
+    return await crud.create_category(data=data, db=db)
 
 
 @router.put(
@@ -46,19 +46,19 @@ def create_category(
     status_code=status.HTTP_200_OK,
     response_model=schemas.Category,
 )
-def update_category(
+async def update_category(
     id: int,
     data: schemas.CategoryUpdate,
     db: Session = Depends(get_db),
     current_admin: schemas.User = Depends(get_current_admin),
 ):
-    return crud.update_category(id=id, data=data, db=db)
+    return await crud.update_category(id=id, data=data, db=db)
 
 
 @router.delete(path="/delete-category/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_category(
+async def delete_category(
     id: int,
     db: Session = Depends(get_db),
     current_admin: schemas.User = Depends(get_current_admin),
 ):
-    crud.delete_category(id=id, db=db)
+    await crud.delete_category(id=id, db=db)

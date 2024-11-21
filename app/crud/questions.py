@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 
 from .. import models, schemas, utils
 from ..core.exceptions import *
+from ..core.config import logger
 
-
-def get_question_by_id(id: int, db: Session) -> schemas.Question:
+async def get_question_by_id(id: int, db: Session) -> schemas.Question:
     try:
         db_question = db.query(models.Question).filter(models.Question.id == id).first()
         if not db_question:
@@ -14,11 +14,11 @@ def get_question_by_id(id: int, db: Session) -> schemas.Question:
         question: schemas.Question = schemas.Question(**db_question.to_dict())
         return question
     except DatabaseError as e:
-        print(e)
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise UnexpectedError()
 
 
-def get_all_questions(
+async def get_all_questions(
     db: Session, answered: bool = None, page: int = 1, limit: int = 10
 ) -> list[schemas.Question]:
     try:
@@ -31,12 +31,12 @@ def get_all_questions(
             .all()
         ]
         return results
-    except Exception as e:
-        print(e)
+    except DatabaseError as e:
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise UnexpectedError()
 
 
-def create_question(data: schemas.CreateQuestion, db: Session) -> schemas.Question:
+async def create_question(data: schemas.CreateQuestion, db: Session) -> schemas.Question:
     try:
         data_dict = data.model_dump()
         data_dict["answered"] = False
@@ -45,12 +45,12 @@ def create_question(data: schemas.CreateQuestion, db: Session) -> schemas.Questi
         ).fetchone()[0]
         db.commit()
         return get_question_by_id(id=id, db=db)
-    except Exception as e:
-        print(e)
+    except DatabaseError as e:
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise UnexpectedError()
 
 
-def answer_question(data: schemas.AnswerQuestion, db: Session) -> schemas.Question:
+async def answer_question(data: schemas.AnswerQuestion, db: Session) -> schemas.Question:
     try:
         question: schemas.Question = get_question_by_id(id=data.id, db=db)
         utils.send_email(
@@ -65,12 +65,12 @@ def answer_question(data: schemas.AnswerQuestion, db: Session) -> schemas.Questi
         )
         db.commit()
         return {"message": "The answer has been sent successfully"}
-    except Exception as e:
-        print(e)
+    except DatabaseError as e:
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise UnexpectedError()
 
 
-def delete_question(id: int, db: Session):
+async def delete_question(id: int, db: Session):
     try:
         question = db.query(models.Question).filter(models.Question.id == id)
         if not question.first():
@@ -78,40 +78,5 @@ def delete_question(id: int, db: Session):
         question.delete()
         db.commit()
     except DatabaseError as e:
-        print(e)
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise UnexpectedError()
-
-
-# def update_question(
-#     id: int, data: schemas.QuestionUpdate, db: Session
-# ) -> schemas.Question:
-#     try:
-#         query = db.query(models.Question).filter(models.Question.id == id)
-#         db_question = query.first()
-#         if not db_question:
-#             raise QuestionNotFound()
-#         db_question.type = data.type
-#         db_question.name = data.name
-#         db.commit()
-#         return get_question_by_id(id=id, db=db)
-#     except Exception as e:
-#         print(e)
-#         raise UnexpectedError()
-
-
-# def delete_question(id: int, db: Session):
-#     try:
-#         query = db.query(models.Question).filter(models.Question.id == id)
-#         if not query.first():
-#             raise QuestionNotFound()
-#         query.delete()
-#         db.commit()
-#     except Exception as e:
-#         print(e)
-#         raise UnexpectedError()
-
-
-# def get_question_name(question_id: int, db: Session) -> str:
-#     return db.execute(
-#         select(models.Question.name).where(models.Question.id == question_id)
-#     ).fetchone()[0]

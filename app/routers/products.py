@@ -14,8 +14,8 @@ router = APIRouter(prefix="/products")
     status_code=status.HTTP_200_OK,
     response_model=schemas.Product,
 )
-def get_single_product(id: int, db: Session = Depends(get_db)):
-    return crud.get_product_by_id(product_id=id, db=db)
+async def get_single_product(id: int, db: Session = Depends(get_db)):
+    return await crud.get_product_by_id(product_id=id, db=db)
 
 
 @router.get(
@@ -23,13 +23,13 @@ def get_single_product(id: int, db: Session = Depends(get_db)):
     status_code=status.HTTP_200_OK,
     response_model=List[schemas.Product],
 )
-def get_all_products(
+async def get_all_products(
     categoryId: int = None,
     page: int = 1,
     limit: int = 10,
     db: Session = Depends(get_db),
 ):
-    return crud.get_all_products(db=db, category_id=categoryId, page=page, limit=limit)
+    return await crud.get_all_products(db=db, category_id=categoryId, page=page, limit=limit)
 
 
 @router.get(
@@ -37,12 +37,12 @@ def get_all_products(
     status_code=status.HTTP_200_OK,
     response_model=List[schemas.Product],
 )
-def search_products(
+async def search_products(
     name: str,
     categoryId: int = None,
     db: Session = Depends(get_db),
 ):
-    return crud.search_products(name=name, category_id=categoryId, db=db)
+    return await crud.search_products(name=name, category_id=categoryId, db=db)
 
 
 @router.post(
@@ -50,12 +50,12 @@ def search_products(
     status_code=status.HTTP_200_OK,
     response_model=schemas.Product,
 )
-def create_product(
+async def create_product(
     data: schemas.ProductCreate,
     db: Session = Depends(get_db),
     current_admin: schemas.User = Depends(get_current_admin),
 ):
-    return crud.create_product(data=data, db=db)
+    return await crud.create_product(data=data, db=db)
 
 
 @router.put(
@@ -63,19 +63,19 @@ def create_product(
     status_code=status.HTTP_200_OK,
     response_model=schemas.Product,
 )
-def update_product(
+async def update_product(
     id: int,
     data: schemas.ProductUpdate,
     db: Session = Depends(get_db),
     current_admin: schemas.User = Depends(get_current_admin),
 ):
-    return crud.update_product(id=id, data=data, db=db)
+    return await crud.update_product(id=id, data=data, db=db)
 
 
 @router.delete(path="/delete-product/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_product(
+async def delete_product(
     id: int,
     db: Session = Depends(get_db),
     current_admin: schemas.User = Depends(get_current_admin),
 ):
-    crud.delete_product(id=id, db=db)
+    await crud.delete_product(id=id, db=db)

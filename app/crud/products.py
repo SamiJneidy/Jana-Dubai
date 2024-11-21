@@ -5,9 +5,10 @@ from .images import add_product_images, delete_product_images, get_product_image
 from .categories import get_category_name
 from .. import schemas, models, utils
 from ..core.exceptions import *
+from ..core.config import logger
 
 
-def get_db_product(product_id: int, db: Session) -> models.Product:
+async def get_db_product(product_id: int, db: Session) -> models.Product:
     try:
         product = (
             db.query(models.Product).filter(models.Product.id == product_id).first()
@@ -16,32 +17,32 @@ def get_db_product(product_id: int, db: Session) -> models.Product:
             raise ProductNotFound()
         return product
     except DatabaseError as e:
-        print(e)
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise UnexpectedError()
 
 
-def get_product_by_id(product_id: int, db: Session) -> schemas.Product:
+async def get_product_by_id(product_id: int, db: Session) -> schemas.Product:
     try:
         db_product: models.Product = get_db_product(product_id=product_id, db=db)
-        category_name: str = get_category_name(
+        category_name: str = await get_category_name(
             category_id=db_product.category_id, db=db
         )
         product_dict: dict = db_product.to_dict()
         product_dict["category_name"] = category_name
         product: schemas.Product = schemas.Product(**product_dict)
-        product.images = get_product_images(product_id=product_id, db=db)
+        product.images = await get_product_images(product_id=product_id, db=db)
         return product
     except DatabaseError as e:
-        print(e)
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise e
 
 
-def get_all_products(
+async def get_all_products(
     db: Session, category_id: int = None, page: int = 1, limit: int = 10
 ) -> list[schemas.Product]:
     try:
         products = [
-            get_product_by_id(product.id, db=db)
+            await get_product_by_id(product.id, db=db)
             for product in db.query(models.Product)
             .filter(or_(category_id is None, models.Product.category_id == category_id))
             .offset((page - 1) * limit)
@@ -50,14 +51,14 @@ def get_all_products(
         ]
         return products
     except DatabaseError as e:
-        print(e)
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise e
 
 
-def search_products(name: str, category_id: int, db: Session):
+async def search_products(name: str, category_id: int, db: Session):
     try:
         products = [
-            get_product_by_id(product.id, db=db)
+            await get_product_by_id(product.id, db=db)
             for product in db.query(models.Product)
             .filter(
                 and_(
@@ -69,11 +70,11 @@ def search_products(name: str, category_id: int, db: Session):
         ]
         return products
     except DatabaseError as e:
-        print(e)
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise e
 
 
-def create_product(data: schemas.ProductCreate, db: Session) -> schemas.Product:
+async def create_product(data: schemas.ProductCreate, db: Session) -> schemas.Product:
     try:
         id = db.execute(
             insert(models.Product)
@@ -84,19 +85,18 @@ def create_product(data: schemas.ProductCreate, db: Session) -> schemas.Product:
             )
             .returning(models.Product.id)
         ).fetchone()[0]
-        add_product_images(product_id=id, db=db, images=data.images)
+        await add_product_images(product_id=id, db=db, images=data.images)
         db.commit()
-        return get_product_by_id(product_id=id, db=db)
-    except Exception as e:
-        print(e)
+        return await get_product_by_id(product_id=id, db=db)
+    except DatabaseError as e:
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise e
 
 
-def update_product(
+async def update_product(
     id: int, data: schemas.ProductUpdate, db: Session
 ) -> schemas.Product:
     try:
-        product: schemas.Product = get_product_by_id(product_id=id, db=db)
         db.execute(
             update(models.Product)
             .values(
@@ -107,21 +107,20 @@ def update_product(
             .where(models.Product.id == id)
         )
         if "images" in data.model_dump(exclude_unset=True, exclude_none=True):
-            delete_product_images(product_id=id, db=db)
-            add_product_images(product_id=id, images=data.images, db=db)
+            await delete_product_images(product_id=id, db=db)
+            await add_product_images(product_id=id, images=data.images, db=db)
         db.commit()
-        return get_product_by_id(product_id=id, db=db)
+        return await get_product_by_id(product_id=id, db=db)
     except DatabaseError as e:
-        print(e)
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise e
 
 
-def delete_product(id: int, db: Session):
+async def delete_product(id: int, db: Session):
     try:
-        product = get_product_by_id(product_id=id, db=db)
         db.execute(delete(models.Product).where(models.Product.id == id))
-        delete_product_images(product_id=id, db=db)
+        await delete_product_images(product_id=id, db=db)
         db.commit()
-    except Exception as e:
-        print(e)
+    except DatabaseError as e:
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise e

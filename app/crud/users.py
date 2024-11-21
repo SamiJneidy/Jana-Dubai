@@ -2,9 +2,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from .. import schemas, models
 from ..core.exceptions import *
+from ..core.config import logger
 
-
-def get_user_by_id(id: int, db: Session) -> schemas.User:
+async def get_user_by_id(id: int, db: Session) -> schemas.User:
     try:
         db_user: models.User = (
             db.query(models.User).filter(models.User.id == id).first()
@@ -13,23 +13,23 @@ def get_user_by_id(id: int, db: Session) -> schemas.User:
             raise UserNotFound()
         user = schemas.User(**db_user.to_dict())
         return user
-    except Exception as e:
-        print(e)
+    except DatabaseError as e:
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise e
 
 
-def get_all_users(db: Session) -> list[schemas.User]:
+async def get_all_users(db: Session) -> list[schemas.User]:
     try:
         results = [
             schemas.User(**db_user.to_dict()) for db_user in db.query(models.User).all()
         ]
         return results
-    except Exception as e:
-        print(e)
+    except DatabaseError as e:
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise e
 
 
-def get_user_by_username(username: str, db: Session) -> schemas.User:
+async def get_user_by_username(username: str, db: Session) -> schemas.User:
     try:
         db_user = db.query(models.User).filter(models.User.username == username).first()
         if not db_user:
@@ -37,11 +37,11 @@ def get_user_by_username(username: str, db: Session) -> schemas.User:
         user = schemas.User(**db_user.to_dict())
         return user
     except DatabaseError as e:
-        print(e)
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise UnexpectedError()
 
 
-def get_user_role_by_username(username: str, db: Session):
+async def get_user_role_by_username(username: str, db: Session):
     try:
         role = db.execute(
             select(models.User.role).where(models.User.username == username)
@@ -50,5 +50,5 @@ def get_user_role_by_username(username: str, db: Session):
             raise UserNotFound()
         return role
     except DatabaseError as e:
-        print(e)
+        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise e
