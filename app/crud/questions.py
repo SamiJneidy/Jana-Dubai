@@ -44,7 +44,7 @@ async def create_question(data: schemas.CreateQuestion, db: Session) -> schemas.
             insert(models.Question).values(**data_dict).returning(models.Question.id)
         ).fetchone()[0]
         db.commit()
-        return get_question_by_id(id=id, db=db)
+        return await get_question_by_id(id=id, db=db)
     except DatabaseError as e:
         logger.error(msg=f"An error has occurred: {e}", exc_info=True)
         raise UnexpectedError()
@@ -52,7 +52,7 @@ async def create_question(data: schemas.CreateQuestion, db: Session) -> schemas.
 
 async def answer_question(data: schemas.AnswerQuestion, db: Session) -> schemas.Question:
     try:
-        question: schemas.Question = get_question_by_id(id=data.id, db=db)
+        question: schemas.Question = await get_question_by_id(id=data.id, db=db)
         utils.send_email(
             to=[question.email],
             subject="Jana Dubai - Reply on your question",
