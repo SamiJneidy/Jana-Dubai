@@ -14,7 +14,7 @@ class ResourceNotFound(HTTPException):
     def __init__(self, resource_name="Resource"):
         self.resource_name = resource_name
         self.status_code = status.HTTP_404_NOT_FOUND
-        self.detail = f"{resource_name} not found."
+        self.detail = f"{resource_name} not found"
         super().__init__(status_code=self.status_code, detail=self.detail)
 
 
@@ -51,32 +51,35 @@ class InvalidCredentials(HTTPException):
 
 
 class TokenExpired(HTTPException):
-    def __init__(self, detail="Token has expired."):
+    def __init__(self, detail="Token has expired"):
         self.status_code = status.HTTP_401_UNAUTHORIZED
         self.detail = detail
         super().__init__(status_code=self.status_code, detail=self.detail)
 
 
 class InvalidToken(HTTPException):
-    def __init__(self, detail="Invalid token."):
+    def __init__(self, detail="Invalid token"):
         self.status_code = status.HTTP_401_UNAUTHORIZED
         self.detail = detail
         super().__init__(status_code=self.status_code, detail=self.detail)
 
 
 class Forbidden(HTTPException):
-    def __init__(self, detail="You don't have permission to access this resource."):
+    def __init__(self, detail="You don't have permission to access this resource"):
         self.status_code = status.HTTP_403_FORBIDDEN
         self.detail = detail
         super().__init__(status_code=self.status_code, detail=self.detail)
 
 
 class ResourceAlreadyInUse(HTTPException):
-    def __init__(self, detail="Resource Already In Use"):
+    def __init__(self, resource_name: str = "Resource"):
         self.status_code = status.HTTP_409_CONFLICT
-        self.detail = detail
+        self.detail = f"{resource_name} already in use"
         super().__init__(status_code=self.status_code, detail=self.detail)
 
+class UsernameAlreadyInUse(ResourceAlreadyInUse):
+    def __init__(self):
+        super().__init__(resource_name="Username or email")
 
 class UnexpectedError(HTTPException):
     def __init__(

@@ -6,85 +6,55 @@ from ..core.exceptions import *
 from .. import schemas, models
 from ..core.config import logger
 
-async def get_project_images(project_id: int, db: Session) -> list[schemas.Image]:
-    try:
-        project_images = [
-            schemas.Image(**image.to_dict())
-            for image in db.query(models.Image)
-            .filter(
-                models.Image.usage == "PROJECT", models.Image.master_id == project_id
-            )
-            .all()
-        ]
-        return project_images
-    except DatabaseError as e:
-        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
-        raise UnexpectedError()
+
+async def get_project_images(id: int, db: Session) -> list[schemas.Image]:
+    return [
+        schemas.Image(**image.to_dict())
+        for image in db.query(models.Image)
+        .filter(models.Image.usage == "PROJECT", models.Image.master_id == id)
+        .all()
+    ]
 
 
-async def add_project_images(project_id: int, images: list[schemas.Image], db: Session):
-    try:
-        for image in images:
-            image_dict: dict = image.model_dump(exclude_unset=True)
-            image_dict["master_id"] = project_id
-            image_dict["usage"] = "PROJECT"
-            db.add(models.Image(**image_dict))
-        db.commit()
-    except DatabaseError as e:
-        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
-        raise UnexpectedError()
+async def add_project_images(id: int, images: list[schemas.Image], db: Session) -> None:
+    for image in images:
+        image_dict: dict = image.model_dump(exclude_unset=True)
+        image_dict["master_id"] = id
+        image_dict["usage"] = "PROJECT"
+        db.add(models.Image(**image_dict))
+    db.commit()
 
 
-async def delete_project_images(project_id: int, db: Session):
-    try:
-        db.execute(
-            delete(models.Image).where(
-                models.Image.usage == "PROJECT", models.Image.master_id == project_id
-            )
+async def delete_project_images(id: int, db: Session) -> None:
+    db.execute(
+        delete(models.Image).where(
+            models.Image.usage == "PROJECT", models.Image.master_id == id
         )
-        db.commit()
-    except DatabaseError as e:
-        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
-        raise UnexpectedError()
+    )
+    db.commit()
 
 
-async def get_product_images(product_id: int, db: Session) -> list[schemas.Image]:
-    try:
-        product_images = [
-            schemas.Image(**image.to_dict())
-            for image in db.query(models.Image)
-            .filter(
-                models.Image.usage == "PRODUCT", models.Image.master_id == product_id
-            )
-            .all()
-        ]
-        return product_images
-    except DatabaseError as e:
-        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
-        raise UnexpectedError()
+async def get_product_images(id: int, db: Session) -> list[schemas.Image]:
+    return [
+        schemas.Image(**image.to_dict())
+        for image in db.query(models.Image)
+        .filter(models.Image.usage == "PRODUCT", models.Image.master_id == id)
+        .all()
+    ]
+
+async def add_product_images(id: int, images: list[schemas.Image], db: Session) -> None:
+    for image in images:
+        image_dict: dict = image.model_dump(exclude_unset=True)
+        image_dict["master_id"] = id
+        image_dict["usage"] = "PRODUCT"
+        db.add(models.Image(**image_dict))
+    db.commit()
 
 
-async def add_product_images(product_id: int, images: list[schemas.Image], db: Session):
-    try:
-        for image in images:
-            image_dict: dict = image.model_dump(exclude_unset=True)
-            image_dict["master_id"] = product_id
-            image_dict["usage"] = "PRODUCT"
-            db.add(models.Image(**image_dict))
-        db.commit()
-    except DatabaseError as e:
-        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
-        raise UnexpectedError()
-
-
-async def delete_product_images(product_id: int, db: Session):
-    try:
-        db.execute(
-            delete(models.Image).where(
-                models.Image.usage == "PRODUCT", models.Image.master_id == product_id
-            )
+async def delete_product_images(id: int, db: Session) -> None:
+    db.execute(
+        delete(models.Image).where(
+            models.Image.usage == "PRODUCT", models.Image.master_id == id
         )
-        db.commit()
-    except DatabaseError as e:
-        logger.error(msg=f"An error has occurred: {e}", exc_info=True)
-        raise UnexpectedError()
+    )
+    db.commit()

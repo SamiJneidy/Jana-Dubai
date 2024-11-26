@@ -38,4 +38,10 @@ from .questions import (
     answer_question,
     delete_question,
 )
-from .users import get_user_by_id, get_user_by_username, get_all_users
+from .users import (
+    get_user_by_id,
+    get_user_by_username,
+    get_all_users,
+    get_db_user,
+    user_in_db,
+)
