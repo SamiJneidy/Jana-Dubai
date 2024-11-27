@@ -42,6 +42,7 @@ async def logout(
     path="/get-current-user/",
     status_code=status.HTTP_200_OK,
     response_model=schemas.User,
+    tags=["Authentication"],
 )
 async def get_current_user_controller(
     db: Session = Depends(get_db),
