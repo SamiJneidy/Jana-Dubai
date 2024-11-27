@@ -32,7 +32,7 @@ async def get_all_projects(
     db: Session = Depends(get_db),
 ):
     return await crud.get_all_projects(
-        db=db, categoryId=categoryId, page=page, limit=limit
+        db=db, category_id=categoryId, page=page, limit=limit
     )
 
 
