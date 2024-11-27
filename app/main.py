@@ -33,6 +33,6 @@ app.include_router(questions_router)
 
 
 
-@app.get(path="/", status_code=status.HTTP_200_OK, tage=["Root"])
+@app.get(path="/", status_code=status.HTTP_200_OK, tags=["Root"])
 def root():
     return {"message": "Welcome to Jana Dubai"}
