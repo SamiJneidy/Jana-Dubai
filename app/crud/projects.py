@@ -17,9 +17,7 @@ async def get_db_project(id: int, db: Session) -> models.Project:
 
 async def get_project_by_id(id: int, db: Session) -> schemas.Project:
     db_project: models.Project = await get_db_project(id=id, db=db)
-    category_name: str = await get_category_name(
-        category_id=db_project.category_id, db=db
-    )
+    category_name: str = await get_category_name(id=db_project.category_id, db=db)
     project_dict: dict = db_project.to_dict()
     project_dict["category_name"] = category_name
     project: schemas.Project = schemas.Project(**project_dict)

@@ -19,9 +19,7 @@ async def get_db_product(id: int, db: Session) -> models.Product:
 
 async def get_product_by_id(id: int, db: Session) -> schemas.Product:
     db_product: models.Product = await get_db_product(id=id, db=db)
-    category_name: str = await get_category_name(
-        category_id=db_product.category_id, db=db
-    )
+    category_name: str = await get_category_name(id=db_product.category_id, db=db)
     product_dict: dict = db_product.to_dict()
     product_dict["category_name"] = category_name
     product: schemas.Product = schemas.Product(**product_dict)
