@@ -16,7 +16,7 @@ router = APIRouter(prefix="/projects")
     tags=["Projects"],
 )
 async def get_single_project(id: int, db: Session = Depends(get_db)):
-    return await crud.get_project_by_id(project_id=id, db=db)
+    return await crud.get_project_by_id(id=id, db=db)
 
 
 @router.get(

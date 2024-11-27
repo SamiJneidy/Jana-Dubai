@@ -16,7 +16,7 @@ router = APIRouter(prefix="/products")
     tags=["Products"],
 )
 async def get_single_product(id: int, db: Session = Depends(get_db)):
-    return await crud.get_product_by_id(product_id=id, db=db)
+    return await crud.get_product_by_id(id=id, db=db)
 
 
 @router.get(
