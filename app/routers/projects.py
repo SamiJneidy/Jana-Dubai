@@ -13,6 +13,7 @@ router = APIRouter(prefix="/projects")
     path="/get-projects/{id}",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Project,
+    tags=["Projects"],
 )
 async def get_single_project(id: int, db: Session = Depends(get_db)):
     return await crud.get_project_by_id(project_id=id, db=db)
@@ -22,6 +23,7 @@ async def get_single_project(id: int, db: Session = Depends(get_db)):
     path="/get-projects/",
     status_code=status.HTTP_200_OK,
     response_model=List[schemas.Project],
+    tags=["Projects"],
 )
 async def get_all_projects(
     categoryId: int = None,
@@ -29,13 +31,16 @@ async def get_all_projects(
     limit: int = 10,
     db: Session = Depends(get_db),
 ):
-    return await crud.get_all_projects(db=db, categoryId=categoryId, page=page, limit=limit)
+    return await crud.get_all_projects(
+        db=db, categoryId=categoryId, page=page, limit=limit
+    )
 
 
 @router.post(
     path="/create-project/",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Project,
+    tags=["Projects"],
 )
 async def create_project(
     data: schemas.ProjectCreate,
@@ -49,6 +54,7 @@ async def create_project(
     path="/update-project/{id}",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Project,
+    tags=["Projects"],
 )
 async def update_project(
     id: int,
@@ -59,7 +65,11 @@ async def update_project(
     return await crud.update_project(id=id, data=data, db=db)
 
 
-@router.delete(path="/delete-project/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    path="/delete-project/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    tags=["Projects"],
+)
 async def delete_project(
     id: int,
     db: Session = Depends(get_db),

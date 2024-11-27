@@ -11,7 +11,7 @@ router = APIRouter(prefix="/mail")
 
 
 @router.post(
-    path="/send-email/", status_code=status.HTTP_200_OK
+    path="/send-email/", status_code=status.HTTP_200_OK, tags=["Email"],
 )
 async def send_email(email: schemas.Email):
     await utils.send_email(to=[email.to], subject=email.subject, body=email.body)

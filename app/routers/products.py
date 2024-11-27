@@ -13,6 +13,7 @@ router = APIRouter(prefix="/products")
     path="/get-products/{id}",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Product,
+    tags=["Products"],
 )
 async def get_single_product(id: int, db: Session = Depends(get_db)):
     return await crud.get_product_by_id(product_id=id, db=db)
@@ -22,6 +23,7 @@ async def get_single_product(id: int, db: Session = Depends(get_db)):
     path="/get-products/",
     status_code=status.HTTP_200_OK,
     response_model=List[schemas.Product],
+    tags=["Products"],
 )
 async def get_all_products(
     categoryId: int = None,
@@ -29,13 +31,16 @@ async def get_all_products(
     limit: int = 10,
     db: Session = Depends(get_db),
 ):
-    return await crud.get_all_products(db=db, category_id=categoryId, page=page, limit=limit)
+    return await crud.get_all_products(
+        db=db, category_id=categoryId, page=page, limit=limit
+    )
 
 
 @router.get(
     path="/search-products/",
     status_code=status.HTTP_200_OK,
     response_model=List[schemas.Product],
+    tags=["Products"],
 )
 async def search_products(
     name: str,
@@ -49,6 +54,7 @@ async def search_products(
     path="/create-product/",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Product,
+    tags=["Products"],
 )
 async def create_product(
     data: schemas.ProductCreate,
@@ -62,6 +68,7 @@ async def create_product(
     path="/update-product/{id}",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Product,
+    tags=["Products"],
 )
 async def update_product(
     id: int,
@@ -72,7 +79,11 @@ async def update_product(
     return await crud.update_product(id=id, data=data, db=db)
 
 
-@router.delete(path="/delete-product/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    path="/delete-product/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    tags=["Products"],
+)
 async def delete_product(
     id: int,
     db: Session = Depends(get_db),

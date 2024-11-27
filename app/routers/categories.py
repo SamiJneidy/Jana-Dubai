@@ -14,6 +14,7 @@ router = APIRouter(prefix="/categories")
     path="/get-categories/{id}",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Category,
+    tags=["Categories"],
 )
 async def get_category_by_id(id: int, db: Session = Depends(get_db)):
     return await crud.get_category_by_id(id=id, db=db)
@@ -23,6 +24,7 @@ async def get_category_by_id(id: int, db: Session = Depends(get_db)):
     path="/get-categories/",
     status_code=status.HTTP_200_OK,
     response_model=List[schemas.Category],
+    tags=["Categories"],
 )
 async def get_all_categories(type: str = None, db: Session = Depends(get_db)):
     return await crud.get_all_categories(type=type, db=db)
@@ -32,6 +34,7 @@ async def get_all_categories(type: str = None, db: Session = Depends(get_db)):
     path="/create-category/",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Category,
+    tags=["Categories"],
 )
 async def create_category(
     data: schemas.CategoryCreate,
@@ -45,6 +48,7 @@ async def create_category(
     path="/update-category/{id}",
     status_code=status.HTTP_200_OK,
     response_model=schemas.Category,
+    tags=["Categories"],
 )
 async def update_category(
     id: int,
@@ -55,7 +59,11 @@ async def update_category(
     return await crud.update_category(id=id, data=data, db=db)
 
 
-@router.delete(path="/delete-category/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    path="/delete-category/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    tags=["Categories"],
+)
 async def delete_category(
     id: int,
     db: Session = Depends(get_db),
