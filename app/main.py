@@ -1,18 +1,13 @@
 import logging
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
-
-from .routers import (
-    users_router,
-    auth_router,
-    categories_router,
-    products_router,
-    projects_router,
-    mail_router,
-    questions_router
-)
+from .core.exceptions import ResourceNotFound, register_handlers
+from .routers import routers
 
 app = FastAPI()
+
+for router in routers:
+    app.include_router(router)
 
 origins = ["*"]
 app.add_middleware(
@@ -23,16 +18,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(users_router)
-app.include_router(auth_router)
-app.include_router(categories_router)
-app.include_router(products_router)
-app.include_router(projects_router)
-app.include_router(mail_router)
-app.include_router(questions_router)
+register_handlers(app=app)
 
-
-
-@app.get(path="/", status_code=status.HTTP_200_OK, tags=["Root"])
-def root():
-    return {"message": "Welcome to Jana Dubai"}
+@app.get(path="/", status_code=status.HTTP_200_OK, tags=["Health Check"])
+def health_check():
+    return {"message": "Welcome to Jana Dubai, The server is running."}

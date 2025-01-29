@@ -1,9 +1,7 @@
-import asyncio
 from typing import List
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from pydantic import EmailStr
 from ..core.config import settings
-from ..core.exceptions import UnexpectedError
 
 conf = ConnectionConfig(
     MAIL_USERNAME=settings.mail_username,
@@ -21,12 +19,7 @@ fm = FastMail(conf)
 
 
 async def send_email(to: List[EmailStr], subject: str, body: str, subtype: str = "plain"):
-    try:
-        message = MessageSchema(
-            subject=subject, body=body, recipients=to, subtype=subtype
-        )
-        await fm.send_message(message)
-        # asyncio.run(fm.send_message(message))
-    except Exception as e:
-        print(e)
-        raise UnexpectedError()
+    message = MessageSchema(
+        subject=subject, body=body, recipients=to, subtype=subtype
+    )
+    await fm.send_message(message)
