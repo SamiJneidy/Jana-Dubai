@@ -1,4 +1,5 @@
 app/temp.py
 venv/
 .env
+requirements_old.txt
 __pycache__
